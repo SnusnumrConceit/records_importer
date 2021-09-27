@@ -13,11 +13,20 @@
     </div>
     <div class="card mt-2">
         <div class="card-body">
-            @forelse($records as $record)
-                <div>{{ $record->name }}</div>
+            @forelse($groups as $group)
+                <div class="card mb-4">
+                    <div class="card-body row justify-content-between px-5">
+                        <div>{{ $group->date->format(__('formats.date')) }}</div>
+                        <div><span class="badge badge-primary p-2">{{ $group->count_records }}</span></div>
+                    </div>
+                </div>
             @empty
                 {{ __('records.no_records') }}
             @endforelse
         </div>
     </div>
+
+    @if($groups->isNotEmpty())
+        {{ $groups->links() }}
+    @endif
 @endsection

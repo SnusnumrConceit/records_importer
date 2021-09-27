@@ -2,6 +2,11 @@
 
 @section('content')
     <div class="card">
+        @if($import_status)
+            <div class="alert alert-info">
+                {{ $import_status }}
+            </div>
+        @endif
         <div class="card-body ml-4">
             <form
                 action="{{ route('records.import.store') }}"
