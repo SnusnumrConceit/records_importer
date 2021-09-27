@@ -5,6 +5,8 @@ namespace Tests\Unit\Record\Import;
 use App\Record;
 use Tests\TestCase;
 use Illuminate\Http\UploadedFile;
+use App\Imports\Record\RecordImport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class StoreTest extends TestCase
 {
@@ -44,12 +46,17 @@ class StoreTest extends TestCase
      */
     public function testAnyoneCanImportRecords()
     {
-        $this->markTestSkipped();
+        Excel::fake();
+
         foreach (Record::getAvailableExtensions() as $extension) {
             $file = UploadedFile::fake()->create(sprintf('file.%s', $extension), 5120);
 
             $response = $this->from($this->getIndexRoute())
                 ->post($this->getImportRoute(), ['file' => $file]);
+
+            Excel::assertQueued($file->getFilename(), function (RecordImport $import) {
+                return true;
+            });
 
             $response->assertRedirect(route('records.index'));
             $response->assertSessionHas('success', __('records.messages.importing'));
