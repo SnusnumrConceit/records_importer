@@ -14,7 +14,7 @@ class IndexRecord extends BaseRequest
     public function rules()
     {
         $rules = [
-            'keyword'    => 'nullable|string|max:2',
+            'keyword'    => 'nullable|string|max:255',
             'date_start' => 'nullable|date_format:Y-m-d',
             'date_end'   => 'nullable|date_format:Y-m-d|before:tomorrow',
         ];

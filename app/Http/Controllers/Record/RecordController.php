@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Record;
 
 use App\Record;
-use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Record\IndexRecord;
 
@@ -19,7 +18,10 @@ class RecordController extends Controller
     {
         $records = Record::query();
 
-        $records->when($request->name, function ($query, $name) {
+        $records->selectRaw('Date(date) as date')
+            ->selectRaw('COUNT(*) as count_records');
+
+        $records->when($request->keyword, function ($query, $name) {
            return $query->where('name', 'LIKE', $name . '%');
         });
 
@@ -35,7 +37,7 @@ class RecordController extends Controller
             return $query;
         });
 
-        $groups = $records->select(DB::raw('Date(date) as date'), DB::raw('COUNT(*) as count_records'))
+        $groups = $records
             ->latest('date')
             ->groupBy('date')
             ->paginate();
