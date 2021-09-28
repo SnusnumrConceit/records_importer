@@ -67,7 +67,7 @@ class RecordImport implements ToModel, WithBatchInserts, WithChunkReading, WithE
     {
         ++$this->processed;
 
-        if (($this->processed % $this->chunkSize() === 0)) {
+        if ($this->processed === $this->chunkSize()) {
             cache()->tags('records_import')->increment($this->getProcessedCacheKey(), $this->processed);
 
             $this->refreshCachedImportProgress(function () {
@@ -112,7 +112,7 @@ class RecordImport implements ToModel, WithBatchInserts, WithChunkReading, WithE
 
                 $this->total = (int) $total[key($total)]; // ['worksheet' => 'totalRows']
 
-                $this->refreshCachedImportProgress(function () use ($event) {
+                $this->refreshCachedImportProgress(function () {
                     return [
                         'processed' => 0,
                         'total'     => $this->total,
@@ -121,7 +121,7 @@ class RecordImport implements ToModel, WithBatchInserts, WithChunkReading, WithE
             },
 
             AfterImport::class => function(AfterImport $event) {
-                $this->refreshCachedImportProgress(function() use ($event) {
+                $this->refreshCachedImportProgress(function() {
                     return [
                         'processed' => cache()->tags('records_import')->get($this->getProcessedCacheKey()),
                         'total'     => $this->total,
@@ -133,7 +133,7 @@ class RecordImport implements ToModel, WithBatchInserts, WithChunkReading, WithE
             },
 
             ImportFailed::class => function(ImportFailed $event) {
-                $this->refreshCachedImportProgress(function () use ($event) {
+                $this->refreshCachedImportProgress(function () {
                     return [
                         'error'   => 'import_has_error', // храним ключ перевода для мультиязычности
                     ];
