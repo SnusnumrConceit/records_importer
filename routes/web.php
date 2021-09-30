@@ -20,3 +20,10 @@ Route::get('/', function () {
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
+
+Route::group(['namespace' => 'Record'], function () {
+    Route::get('/records', 'RecordController@index')->name('records.index');
+
+    Route::get('/records/import', 'ImportController@index')->name('records.import.index');
+    Route::post('/records/import', 'ImportController@store')->name('records.import.store');
+});
